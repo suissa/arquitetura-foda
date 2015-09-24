@@ -34,6 +34,7 @@ Além disso ele receberia um JSON como um roteiro de onde colocar os dados, por 
 
 Arquitetura baseada em funções atômicas e um módulo com um JSON de config que deve ser lido e gerado para a linguagem e framework que quiser.
 
+Nessa arquitetura teremos umm sistema de mensagens que será nosso EventEmitter para todos, porém no Node.js podemos usar o `EventEmitter`.
 
 Exemplo de JSON de rotas no Express mas que pode ser usado para gerar rotas no Angular ou qualquer outro.
 
@@ -42,22 +43,27 @@ var express = require('express')
   , router = express.Router()
   , Controller = require('./../controller')
   , Routes = require('./../../routes')
+  , EventController = require('event-controller')
   ;
 
 var cbCreate = function(req, res) {
-    Controller.create(req, res);
+    var data = req.body;
+    EventController.emit('MyModuleCreate', data);
   }
   , cbRetrieve = function(req, res) {
-      Controller.retrieve(req, res);
+    EventController.emit('MyModuleRetrieve');
   }
   , cbGet = function(req, res) {
-      Controller.get(req, res);
+    var find = res.body.find;
+    EventController.emit('MyModuleGet', find);
   }
   , cbUpdate = function(req, res) {
-      Controller.update(req, res);
+    var data = req.body;
+    EventController.emit('MyModuleUpdate', data);
   }
   , cbDelete = function(req, res) {
-      Controller.remove(req, res);
+    var find = res.body.find;
+    EventController.emit('MyModulDelete', find);
   }
   ;
 
@@ -99,6 +105,9 @@ module.exports = router;
 
 ```
 
+Agora refatorando para usar eventos.
+
+git@github.com:suissa/arquitetura-foda.git
 
 Meus artigos sobre esses temas:
 
