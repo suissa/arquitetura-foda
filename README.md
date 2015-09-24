@@ -1,4 +1,6 @@
-Tópicos para estudar/implementar
+# a Ideia
+
+Criar um padrão para que as funções possam ser reusadas nos módulos, esses sendo assíncronos e com uma API REST e/ou Eventos.
 
 # Frontend
 - Atomic Design Reativo
