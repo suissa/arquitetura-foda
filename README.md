@@ -34,6 +34,72 @@ Além disso ele receberia um JSON como um roteiro de onde colocar os dados, por 
 
 Arquitetura baseada em funções atômicas e um módulo com um JSON de config que deve ser lido e gerado para a linguagem e framework que quiser.
 
+
+Exemplo de JSON de rotas no Express mas que pode ser usado para gerar rotas no Angular ou qualquer outro.
+
+```js
+var express = require('express')
+  , router = express.Router()
+  , Controller = require('./../controller')
+  , Routes = require('./../../routes')
+  ;
+
+var cbCreate = function(req, res) {
+    Controller.create(req, res);
+  }
+  , cbRetrieve = function(req, res) {
+      Controller.retrieve(req, res);
+  }
+  , cbGet = function(req, res) {
+      Controller.get(req, res);
+  }
+  , cbUpdate = function(req, res) {
+      Controller.update(req, res);
+  }
+  , cbDelete = function(req, res) {
+      Controller.remove(req, res);
+  }
+  ;
+
+var routes = [{
+      action: 'create'
+    , method: 'post'
+    , url: '/'
+    , callback: cbCreate
+    }
+  , {
+      action: 'retrieve'
+    , method: 'get'
+    , url: '/'
+    , callback: cbRetrieve
+  }
+  , {
+      action: 'get'
+    , method: 'get'
+    , url: '/:id'
+    , callback: cbGet
+  }
+  , {
+      action: 'update'
+    , method: 'put'
+    , url: '/:id'
+    , callback: cbUpdate
+  }
+  , {
+      action: 'delete'
+    , method: 'delete'
+    , url: '/:id'
+    , callback: cbDelete
+  }
+];
+
+Routes.createModuleRoutes(router, routes);
+
+module.exports = router;
+
+```
+
+
 Meus artigos sobre esses temas:
 
 [http://nomadev.com.br/frontend-driven-development-com-mean-e-atomic-design/](http://nomadev.com.br/frontend-driven-development-com-mean-e-atomic-design/)
