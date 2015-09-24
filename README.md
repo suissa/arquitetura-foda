@@ -1,6 +1,6 @@
-# a Ideia
+# A Ideia
 
-Criar um padrão para que as funções possam ser reusadas nos módulos, esses sendo assíncronos e com uma API REST e/ou Eventos.
+Criar um padrão de módulo composto por funções atômicas que possam ser reusadas nos módulos, esses sendo assíncronos e com uma API REST e/ou Eventos.
 
 # Frontend
 - Atomic Design Reativo
