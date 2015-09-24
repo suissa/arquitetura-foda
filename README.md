@@ -28,7 +28,9 @@ Além disso ele receberia um JSON como um roteiro de onde colocar os dados, por 
 
 > Atualiza no Cache
 
-Arquitetura baseada em funções atômicas e o módulo e um JSON de config que deve ser lido e gerado para a linguagem e framework que quiser.
+# Arquitetura
+
+Arquitetura baseada em funções atômicas e um módulo com um JSON de config que deve ser lido e gerado para a linguagem e framework que quiser.
 
 Meus artigos sobre esses temas:
 
