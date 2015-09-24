@@ -1,6 +1,6 @@
 # Atomic Design Universal
 
-Uma arquitetura que rode módulos híbridos, escritos em diferentes linguagens e usando diferentes bancos, todos assíncronos e baseados em eventos ou REST.
+**Uma arquitetura que rode módulos híbridos, escritos em diferentes linguagens e usando diferentes bancos, todos assíncronos e baseados em eventos ou REST.**
 
 Um padrão para que as funções possam ser reusadas nos módulos, esses sendo assíncronos e com uma API REST e/ou Eventos.
 
@@ -118,12 +118,99 @@ module.exports = router;
 
 Agora refatorando para usar eventos.
 
-git@github.com:suissa/arquitetura-foda.git
+```js
+var express = require('express')
+  , router = express.Router()
+  , Controller = require('./../controller')
+  , Routes = require('./../../routes')
+  , EventController = require('event-controller')
+  ;
 
-Meus artigos sobre esses temas:
+var cbCreate = function(req, res) {
+    var data = req.body;
+    EventController.emit('MyModuleCreate', data);
+    Controller.create(req, res);
+  }
+  , cbRetrieve = function(req, res) {
+    EventController.emit('MyModuleRetrieve');
+      Controller.retrieve(req, res);
+  }
+  , cbGet = function(req, res) {
+    var find = res.body.find;
+    EventController.emit('MyModuleGet', find);
+      Controller.get(req, res);
+  }
+  , cbUpdate = function(req, res) {
+    var data = req.body;
+    EventController.emit('MyModuleUpdate', data);
+      Controller.update(req, res);
+  }
+  , cbDelete = function(req, res) {
+    var find = res.body.find;
+    EventController.emit('MyModulDelete', find);
+      Controller.remove(req, res);
+  }
+  ;
 
-[http://nomadev.com.br/frontend-driven-development-com-mean-e-atomic-design/](http://nomadev.com.br/frontend-driven-development-com-mean-e-atomic-design/)
-[http://nomadev.com.br/fullstack-offline-api-first/](http://nomadev.com.br/fullstack-offline-api-first/)
-[http://nomadev.com.br/passo-a-passo-como-desenvolver-com-atomic-design-mobile-first-e-stylus/](http://nomadev.com.br/passo-a-passo-como-desenvolver-com-atomic-design-mobile-first-e-stylus/)
-[http://nomadev.com.br/passo-a-passo-como-desenvolver-com-atomic-design-mobile-first-e-stylus-parte-2/](http://nomadev.com.br/passo-a-passo-como-desenvolver-com-atomic-design-mobile-first-e-stylus-parte-2/)
-[]()
+var routes = [{
+      action: 'create'
+    , method: 'post'
+    , url: '/'
+    , callback: cbCreate
+    }
+  , {
+      action: 'retrieve'
+    , method: 'get'
+    , url: '/'
+    , callback: cbRetrieve
+  }
+  , {
+      action: 'get'
+    , method: 'get'
+    , url: '/:id'
+    , callback: cbGet
+  }
+  , {
+      action: 'update'
+    , method: 'put'
+    , url: '/:id'
+    , callback: cbUpdate
+  }
+  , {
+      action: 'delete'
+    , method: 'delete'
+    , url: '/:id'
+    , callback: cbDelete
+  }
+];
+
+Routes.createModuleRoutes(router, routes);
+
+module.exports = router;
+```
+
+## FRP - Functional reactive programming
+
+> Functional reactive programming (FRP) is a programming paradigm for reactive programming (asynchronous dataflow programming) using the building blocks of functional programming (e.g. map, reduce, filter). FRP has been used for programming graphical user interfaces (GUIs), robotics, and music, aiming to simplify these problems by explicitly modeling time.
+
+fonte: [https://en.wikipedia.org/wiki/Functional_reactive_programming](https://en.wikipedia.org/wiki/Functional_reactive_programming)
+
+# Validação
+
+Para isso criaremos um módulo/serviço de validação universal e atômica.
+
+Leia mais sobre o [UniversalValidator](https://github.com/Webschool-io/UniversalValidator).
+
+# Refêrencias
+
+## Meus artigos sobre esses temas:
+
+- [http://nomadev.com.br/frontend-driven-development-com-mean-e-atomic-design/](http://nomadev.com.br/frontend-driven-development-com-mean-e-atomic-design/)
+- [http://nomadev.com.br/fullstack-offline-api-first/](http://nomadev.com.br/fullstack-offline-api-first/)
+- [http://nomadev.com.br/passo-a-passo-como-desenvolver-com-atomic-design-mobile-first-e-stylus/](http://nomadev.com.br/passo-a-passo-como-desenvolver-com-atomic-design-mobile-first-e-stylus/)
+- [http://nomadev.com.br/passo-a-passo-como-desenvolver-com-atomic-design-mobile-first-e-stylus-parte-2/](http://nomadev.com.br/passo-a-passo-como-desenvolver-com-atomic-design-mobile-first-e-stylus-parte-2/)
+
+## De terceiros
+
+- [https://www.bignerdranch.com/blog/what-is-functional-reactive-programming/](https://www.bignerdranch.com/blog/what-is-functional-reactive-programming/)
+- [https://en.wikipedia.org/wiki/Functional_reactive_programming](https://en.wikipedia.org/wiki/Functional_reactive_programming)
