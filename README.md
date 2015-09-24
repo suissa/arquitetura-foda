@@ -1,6 +1,6 @@
-# a Ideia
+# Atomic Design Universal
 
-Criar um padrão para que as funções possam ser reusadas nos módulos, esses sendo assíncronos e com uma API REST e/ou Eventos.
+Um padrão para que as funções possam ser reusadas nos módulos, esses sendo assíncronos e com uma API REST e/ou Eventos.
 
 Criando um padrão de JSON usando as funções já criadas como módulos de JavaScript, futuramente se você quiser mudar de framework ou linguagem de programação bastaria pegar seu JSON de configuração do módulo e executar o gerador para aquela linguagem ou framework específicos. Criando um algoritmo de como os módulos de comunicam, qualquer dev pode gerar o código que bem entender, porém usará a mesma língua e não linguagem, o HTTP ou Eventos.
 
