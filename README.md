@@ -15,6 +15,7 @@ Criar um padrão para que as funções possam ser reusadas nos módulos, esses s
 - Event-driven
 - Isomórfico
 - RabbitMQ? ZeroMQ?
+- UniversalValidator
 
 # Banco de dados
 - DALU: Data Access Layer Universal
