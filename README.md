@@ -23,7 +23,9 @@ Tópicos para estudar/implementar
 Além disso ele receberia um JSON como um roteiro de onde colocar os dados, por exemplo:
 
 > Insere o objeto no MongoDB
+
 > Cria um objeto com _id e nome e insere no Neo4J
+
 > Atualiza no Cache
 
 Arquitetura baseada em funções atômicas e o módulo e um JSON de config que deve ser lido e gerado para a linguagem e framework que quiser.
