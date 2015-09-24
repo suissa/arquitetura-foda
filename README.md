@@ -1,5 +1,7 @@
 # Atomic Design Universal
 
+Uma arquitetura que rode módulos híbridos, escritos em diferentes linguagens e usando diferentes bancos, todos assíncronos e baseados em eventos ou REST.
+
 Um padrão para que as funções possam ser reusadas nos módulos, esses sendo assíncronos e com uma API REST e/ou Eventos.
 
 **[Explicar essa merda melhor, caraleo]**
@@ -21,8 +23,8 @@ Criar um padrão de módulo composto por funções atômicas que possam ser reus
 - Functional Reactive Programming
 - Event-driven
 - Isomórfico
-- RabbitMQ? ZeroMQ?
-- UniversalValidator
+- RabbitMQ? ZeroMQ? [Troupe](https://github.com/rafakato/troupe)
+- [UniversalValidator](https://github.com/Webschool-io/UniversalValidator)
 - Service Workers?
 
 # Banco de dados
