@@ -1,4 +1,4 @@
-var Action = {
+const Action = {
   create: function(req, res) {
     console.log('Action CREATE');
   }

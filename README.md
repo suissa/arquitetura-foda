@@ -489,7 +489,153 @@ const RouteCreate = require(ROUTES_FOLDER + 'route.default.js')(Action, RouteCon
 
 Então olhe essa refatoração!!!
 
-...
+O módulo de rotas tera suas configurações também como a pasta de *actions* e *routes*, além das ações, ficando assim:
+
+```js
+// routes.js
+const ACTIONS_FOLDER = './actions/';
+const ROUTES_FOLDER = './routes/';
+const ACTIONS = ['create', 'retrieve', 'update', 'delete'];
+var Routes = [];
+
+ACTIONS.forEach(function(action) {
+  const Action = require(ACTIONS_FOLDER + 'action.'+ action +'.js');
+  const Config = require(ROUTES_FOLDER + 'route.'+ action +'.config');
+  const Route = require(ROUTES_FOLDER + 'route.default.js')(Action, Config);
+  Routes.push(Route);
+});
+module.exports = Routes;
+```
+
+Nosso padrao de rota ficou assim:
+
+```js
+// route.default.js
+const Route = function(Action, RouteConfig) {
+  const ACTION = RouteConfig.action;
+  const METHOD = RouteConfig.method;
+  const URL = RouteConfig.url;
+  const CALLBACK = function(req, res) {
+    Action.ACTION(req, res);
+  }
+  return {
+      action: ACTION
+    , method: METHOD
+    , url: URL
+    , callback: CALLBACK
+  };
+}
+module.exports = Route;
+```
+
+E os arquivos de confirguraçao de cada rota ficou:
+
+```js
+// route.create.config.js
+const RouteConfig = {
+    action: 'create'
+  , method: 'post'
+  , url: '/'
+  , callback: ''
+};
+module.exports = RouteConfig;
+
+// route.retrieve.config.js
+const RouteConfig = {
+    action: 'retrieve'
+  , method: 'get'
+  , url: '/'
+  , callback: ''
+};
+module.exports = RouteConfig;
+
+// route.update.config.js
+const RouteConfig = {
+    action: 'update'
+  , method: 'update'
+  , url: '/:id'
+  , callback: ''
+};
+module.exports = RouteConfig;
+
+// route.delete.config.js
+const RouteConfig = {
+    action: 'delete'
+  , method: 'delete'
+  , url: '/:id'
+  , callback: ''
+};
+module.exports = RouteConfig;
+```
+
+Nesse caso tenho um CRUD padronizado e simples de adicionar outra rota.
+
+### Actions
+
+Uma `Action` é um módulo independente que executara uma funçao, nesse caso iniciado pela requisiçao em uma rota.
+
+Vamos continuar com o exemplo do Express:
+
+```js
+const Action = {
+  create: function(req, res) {
+    console.log('Action CREATE');
+  }
+}
+module.exports = Action;
+```
+
+Vamos imaginar que iremos criar uma entidade com o `Mongoose`:
+
+```js
+const Action = function(Model) {
+  return {
+    create: function(req, res) {
+      const data = req.body;
+      Model.create(data, callback);
+    }
+  }
+};
+module.exports = Action;
+```
+
+Entao injetamos o `Model` e chamamos a funçao `create`, porém ela precisa de um callback, pois é essa `Action` que responsavel pela continuaçao dos dados no Sistema, ja que um `Model` nao pode ter essa responsabilidade, ele dera apenas fazer a interaçao com o Banco.
+
+```js
+// action.create.js
+const Action = function(Model) {
+  const callbackJSON = function(req, res) {
+    res.json(data);
+  };
+  return {
+    create: function(req, res) {
+      const data = req.body;
+      Model.create(data, callbackJSON);
+    }
+  }
+};
+module.exports = Action;
+```
+
+Porém o `callbackJSON` só sera chamado no `Model`:
+
+```js
+// model.mongoose.js
+const Action = function(Model) {
+  const callbackJSON = function(req, res) {
+    res.json(data);
+  };
+  return {
+    create: function(req, res) {
+      const data = req.body;
+      Model.create(data, callbackJSON);
+    }
+  }
+};
+module.exports = Action;
+```
+
+
 
 ## FRP - Functional reactive programming
 
