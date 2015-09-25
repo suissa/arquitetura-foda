@@ -26,6 +26,7 @@ Criar um padrão de módulo composto por funções atômicas que possam ser reus
 - [UniversalValidator](https://github.com/Webschool-io/UniversalValidator)
 - Service Workers?
 - Docker
+- [runtime.js](https://medium.com/@iefserge/runtime-js-javascript-library-os-823ada1cc3c)
 
 # Banco de dados
 - DALU: Data Access Layer Universal
@@ -43,6 +44,20 @@ Além disso ele receberia um JSON como um roteiro de onde colocar os dados, por 
 
 # Arquitetura
 
+## Módulos como Serviço
+
+Cada módulo deve ser atômico e independente no nível da aplicação, pois seu funcionamento interno não importa para o sistema, a aplicação não deve conhecer de antemão seus módulos.
+
+O módulo para funcionar como ums serviço precisa prover 2 APIs:
+
+- REST
+- Eventos
+
+### REST
+
+### Eventos
+
+## Funções
 Arquitetura baseada em funções atômicas e um módulo com um JSON de config que deve ser lido e gerado para a linguagem e framework que quiser.
 
 Nessa arquitetura teremos umm sistema de mensagens que será nosso EventEmitter para todos, porém no Node.js podemos usar o `EventEmitter`.
