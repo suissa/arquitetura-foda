@@ -204,7 +204,9 @@ Routes.createModuleRoutes(router, routes);
 module.exports = router;
 ```
 
-Analisando esse código percebemos um padrão para o *array* de rotas:
+Analisando esse código percebemos um padrão para o *array* de rotas.
+
+### Rotas - Padrçao
 
 ```js
 var routes = [{
