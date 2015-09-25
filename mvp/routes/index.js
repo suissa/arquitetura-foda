@@ -1,7 +1,5 @@
-var Action = {
-  create: function(req, res) {
-    console.log('Action CREATE');
-  }
-}
+var Action = require('./../actions/action.create.js');
+var RouteConfig = require('./route.create.config');
+var RouteCreate = require('./route.default.js')(Action, RouteConfig);
 
-var RouteCreate = require('./route.create.js')(Action);
+console.log(RouteCreate.action);

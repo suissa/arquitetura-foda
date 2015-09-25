@@ -1,5 +1,5 @@
 // route.create.config.js
-var RouteConfig = {
+const RouteConfig = {
     action: 'create'
   , method: 'post'
   , url: '/'

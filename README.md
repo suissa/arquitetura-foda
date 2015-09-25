@@ -406,7 +406,7 @@ Pois olhe bem a chamada da função do `Action`, o nome da função é sempre o 
 
 ```js
 // route.default.js
-var Route = function(Action, RouteConfig) {
+const Route = function(Action, RouteConfig) {
 const ACTION = 'delete';
 const METHOD = 'delete';
 const URL = '/:id';
@@ -439,15 +439,29 @@ Então eu posso fazer assim no meu módulo de Rotas:
 
 ```js
 // route.create.config.js
-var RouteConfig = {
+const RouteConfig = {
     action: 'create'
   , method: 'post'
   , url: '/'
   , callback: ''
 };
-module.exports = RouteConfig
+module.exports = RouteConfig;
 ```
 
+Então para criar uma Rota de `create` usamos:
+
+```js
+const ACTIONS_FOLDER = './actions/';
+const ROUTES_FOLDER = './routes/';
+
+const Action = require(ACTIONS_FOLDER + 'action.create.js');
+const RouteConfig = require(ROUTES_FOLDER + 'route.create.config');
+const RouteCreate = require(ROUTES_FOLDER + 'route.default.js')(Action, RouteConfig);
+
+console.log(RouteCreate.action);
+```
+
+Criando as outras rotas:
 
 
 ## FRP - Functional reactive programming
