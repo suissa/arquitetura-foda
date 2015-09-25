@@ -204,6 +204,135 @@ Routes.createModuleRoutes(router, routes);
 module.exports = router;
 ```
 
+Analisando esse código percebemos um padrão para o *array* de rotas:
+
+```js
+var routes = [{
+      action: 'create'
+    , method: 'post'
+    , url: '/'
+    , callback: cbCreate
+    }
+  , {
+      action: 'retrieve'
+    , method: 'get'
+    , url: '/'
+    , callback: cbRetrieve
+  }
+  , {
+      action: 'get'
+    , method: 'get'
+    , url: '/:id'
+    , callback: cbGet
+  }
+  , {
+      action: 'update'
+    , method: 'put'
+    , url: '/:id'
+    , callback: cbUpdate
+  }
+  , {
+      action: 'delete'
+    , method: 'delete'
+    , url: '/:id'
+    , callback: cbDelete
+  }
+];
+```
+
+Perceba que cada objeto da rota é:
+
+```js
+{
+    action: 'create'
+  , method: 'post'
+  , url: '/'
+  , callback: cbCreate
+}
+
+```
+
+Ou seja:
+
+```js
+{
+    ação
+  , métodoHTTP
+  , url
+  , funçãoASerExecutada
+}
+
+```
+
+Podemos então padronizar como:
+
+```js
+Route.action
+Route.method
+Route.url
+Route.callback
+```
+
+Nesse caso criamos a rota como um átomo que possa ser reusada, podemos modularizá-la assim:
+
+```js
+// route.create.js
+const ACTION = 'create';
+const METHOD = 'post';
+const URL = '/';
+const CALLBACK = function(req, res) {
+    var data = req.body;
+    Controller.create(req, res);
+}
+
+var Route = {
+    action: ACTION
+  , method: METHOD
+  , url: URL
+  , callback: CALLBACK
+};
+module.exports = Route
+```
+
+Agra perceba que ainda temos a dependência do `Controller` nesse módulo, então se quisermos utilizar outro módulo externo, precisamos injetar ele na nossa rota.
+
+```js
+// route.create.js
+var Route = function(Action) {
+const ACTION = 'create';
+const METHOD = 'post';
+const URL = '/';
+const CALLBACK = function(req, res) {
+    var data = req.body;
+    Action.create(req, res);
+}
+  return {
+      action: ACTION
+    , method: METHOD
+    , url: URL
+    , callback: CALLBACK
+  };
+}
+module.exports = Route;
+```
+
+Estamos usando const para garantir que nossa rota seja um *"módulo puro"*, conceito de [Pure Functions](https://github.com/Webschool-io/workshop-js-funcional-free#pure-functions), nesse caso com esse padrão de rota para o `create` precisamos apenas importá-lo injetando o objeto `Action` que contém a função de *callback*.
+
+Já podemos usar sussegadamente `let` e `const` com o Node v4.
+
+> Extended ES6 support
+
+> ECMA-262 is the latest version of the JavaScript language specification and – by building on a recent V8 version – Node.js 4.0.0 supports many new language features out of the box.
+Here are some examples
+Block scoping using let and const
+Classes. Yes really, JavaScript now supports classes but they are just syntactic sugar built around the prototypical inheritance model of JavaScript. So if you are using CoffeeScript because you just can not live without having a ‘class’ keyword this new feature is for you.
+Generators (function*, next and yield) It makes sense to get used to- and understand them. They will be heavily used in the future. koa.js, for instance, was built by the express folks and heavily depends on them.
+
+fonte: [http://apmblog.dynatrace.com/2015/09/05/all-you-need-to-know-about-node-js-4-0/](http://apmblog.dynatrace.com/2015/09/05/all-you-need-to-know-about-node-js-4-0/)
+
+
+
+
 ## FRP - Functional reactive programming
 
 > Functional reactive programming (FRP) is a programming paradigm for reactive programming (asynchronous dataflow programming) using the building blocks of functional programming (e.g. map, reduce, filter). FRP has been used for programming graphical user interfaces (GUIs), robotics, and music, aiming to simplify these problems by explicitly modeling time.
