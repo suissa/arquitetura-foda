@@ -1,6 +1,6 @@
 # Atomic Design Universal
 
-**Uma arquitetura que rode módulos híbridos, escritos em diferentes linguagens e usando diferentes bancos, todos assíncronos e baseados em eventos ou REST.**
+**Uma arquitetura que rode módulos híbridos como serviço (quem sabe usando Docker), escritos em diferentes linguagens e usando diferentes bancos, todos assíncronos e baseados em eventos ou REST.**
 
 Um padrão para que as funções possam ser reusadas nos módulos, esses sendo assíncronos e com uma API REST e/ou Eventos.
 
@@ -25,6 +25,7 @@ Criar um padrão de módulo composto por funções atômicas que possam ser reus
 - RabbitMQ? ZeroMQ? [Troupe](https://github.com/rafakato/troupe)
 - [UniversalValidator](https://github.com/Webschool-io/UniversalValidator)
 - Service Workers?
+- Docker
 
 # Banco de dados
 - DALU: Data Access Layer Universal
