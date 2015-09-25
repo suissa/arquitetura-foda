@@ -463,6 +463,33 @@ console.log(RouteCreate.action);
 
 Criando as outras rotas:
 
+```js
+const ACTIONS_FOLDER = './actions/';
+const ROUTES_FOLDER = './routes/';
+
+// Create
+const Action = require(ACTIONS_FOLDER + 'action.create.js');
+const RouteConfig = require(ROUTES_FOLDER + 'route.create.config');
+const RouteCreate = require(ROUTES_FOLDER + 'route.default.js')(Action, RouteConfig);
+// Retrieve
+const Action = require(ACTIONS_FOLDER + 'action.retrieve.js');
+const RouteConfig = require(ROUTES_FOLDER + 'route.retrieve.config');
+const RouteCreate = require(ROUTES_FOLDER + 'route.default.js')(Action, RouteConfig);
+// Update
+const Action = require(ACTIONS_FOLDER + 'action.update.js');
+const RouteConfig = require(ROUTES_FOLDER + 'route.update.config');
+const RouteCreate = require(ROUTES_FOLDER + 'route.default.js')(Action, RouteConfig);
+// Delete
+const Action = require(ACTIONS_FOLDER + 'action.delete.js');
+const RouteConfig = require(ROUTES_FOLDER + 'route.delete.config');
+const RouteCreate = require(ROUTES_FOLDER + 'route.default.js')(Action, RouteConfig);
+```
+
+**Percebeu outro padrão?**
+
+Então olhe essa refatoração!!!
+
+...
 
 ## FRP - Functional reactive programming
 
