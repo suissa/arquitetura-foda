@@ -332,6 +332,121 @@ Generators (function*, next and yield) It makes sense to get used to- and unders
 
 fonte: [http://apmblog.dynatrace.com/2015/09/05/all-you-need-to-know-about-node-js-4-0/](http://apmblog.dynatrace.com/2015/09/05/all-you-need-to-know-about-node-js-4-0/)
 
+Bom se já temos o padrão para a rota `create` agora ficou fácil para o resto do [CRUD]():
+
+- Retrieve: lista todos
+
+```js
+// route.retrieve.js
+var Route = function(Action) {
+const ACTION = 'retrieve';
+const METHOD = 'get';
+const URL = '/';
+const CALLBACK = function(req, res) {
+    var data = req.body;
+    Action.retrieve(req, res);
+}
+  return {
+      action: ACTION
+    , method: METHOD
+    , url: URL
+    , callback: CALLBACK
+  };
+}
+module.exports = Route;
+```
+
+- Update: altera uma entidade apatir de um identificador único sendo a variável `:id` na rota:
+
+```js
+// route.update.js
+var Route = function(Action) {
+const ACTION = 'update';
+const METHOD = 'put';
+const URL = '/:id';
+const CALLBACK = function(req, res) {
+    var data = req.body;
+    Action.update(req, res);
+}
+  return {
+      action: ACTION
+    , method: METHOD
+    , url: URL
+    , callback: CALLBACK
+  };
+}
+module.exports = Route;
+```
+
+- Delete: deleta uma entidade apatir de um identificador único sendo a variável `:id` na rota:
+
+```js
+// route.delete.js
+var Route = function(Action) {
+const ACTION = 'delete';
+const METHOD = 'delete';
+const URL = '/:id';
+const CALLBACK = function(req, res) {
+    var data = req.body;
+    Action.delete(req, res);
+}
+  return {
+      action: ACTION
+    , method: METHOD
+    , url: URL
+    , callback: CALLBACK
+  };
+}
+module.exports = Route;
+```
+
+**Notou mais um padrão???**
+
+Pois olhe bem a chamada da função do `Action`, o nome da função é sempre o valor da constante `ACTION`, então vamos refatorar para:
+
+```js
+// route.default.js
+var Route = function(Action, RouteConfig) {
+const ACTION = 'delete';
+const METHOD = 'delete';
+const URL = '/:id';
+const CALLBACK = function(req, res) {
+    var data = req.body;
+    Action.ACTION(req, res);
+}
+  return {
+      action: ACTION
+    , method: METHOD
+    , url: URL
+    , callback: CALLBACK
+  };
+}
+module.exports = Route;
+```
+
+E nosso objeto de configuração de rota ficará assim:
+
+```js
+RouteConfig.action;
+RouteConfig.method;
+RouteConfig.url;
+RouteConfig.callback;
+};
+module.exports = RouteConfig
+```
+
+Então eu posso fazer assim no meu módulo de Rotas:
+
+```js
+// route.create.config.js
+var RouteConfig = {
+    action: 'create'
+  , method: 'post'
+  , url: '/'
+  , callback: ''
+};
+module.exports = RouteConfig
+```
 
 
 
