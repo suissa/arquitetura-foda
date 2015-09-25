@@ -1,0 +1,19 @@
+{
+  "name": "arquitetura-foda",
+  "version": "0.0.1",
+  "description": "Testes do Susu",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/suissa/arquitetura-foda.git"
+  },
+  "author": "Suiss",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/suissa/arquitetura-foda/issues"
+  },
+  "homepage": "https://github.com/suissa/arquitetura-foda#readme"
+}

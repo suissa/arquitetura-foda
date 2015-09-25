@@ -1,13 +1,9 @@
 // model.mongoose.js
-const Action = function(Model) {
-  const callbackJSON = function(req, res) {
-    res.json(data);
-  };
-  return {
-    create: function(req, res) {
-      const data = req.body;
-      Model.create(data, callbackJSON);
-    }
-  }
-};
-module.exports = Action;
+const Mongoose = require('mongoose');
+const skeleton = require('./../schemas/schema.beer');
+const Schema = new mongoose.Schema(skeleton);
+const ModelMongoose = mongoose.model('Beer', Schema);
+
+Model = require('./model')(ModelMongoose);
+
+module.exports = Model;

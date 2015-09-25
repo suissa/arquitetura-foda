@@ -489,6 +489,8 @@ const RouteCreate = require(ROUTES_FOLDER + 'route.default.js')(Action, RouteCon
 
 Então olhe essa refatoração!!!
 
+# TO SEM aCENTO no a [arrumar acentos]
+
 O módulo de rotas tera suas configurações também como a pasta de *actions* e *routes*, além das ações, ficando assim:
 
 ```js
@@ -617,22 +619,443 @@ const Action = function(Model) {
 module.exports = Action;
 ```
 
-Porém o `callbackJSON` só sera chamado no `Model`:
+Porém o `callbackJSON` só sera chamado no `Model`, porém antes de usarmos um `Model` ele deve ser criado com base no `Schema` passado.
+
+### Schema
+
+Como no meu exemplo estou usando `Mongoose` precisamos entao antes de tudo, vamos pegar um exemplo que ensino no meu Workshop Be MEaN antigo:
+
+```js
+var Schema = mongoose.Schema
+  ,  _schema = {
+      name: { type: String, default: '' }
+    , description: { type: String, default: '' }
+    , alcohol: { type: Number, min: 0, default: '' }
+    , price: { type: Number, min: 0, default: '' }
+    , category: { type: String, default: ''}
+    , created_at: { type: Date, default: Date.now }
+  }
+  , BeerSchema = new Schema(_schema)
+  , Beer = mongoose.model('Beer', BeerSchema)
+  ;
+
+module.exports = Beer;
+```
+
+Inicialmente separamos o `Schema` do `Model` para ele poder ser reaproveitado:
+
+```js
+const Schema = {
+  name: { type: String, default: '' }
+, description: { type: String, default: '' }
+, alcohol: { type: Number, min: 0, default: '' }
+, price: { type: Number, min: 0, default: '' }
+, category: { type: String, default: ''}
+, created_at: { type: Date, default: Date.now }
+}
+
+module.exports = Schema;
+```
+
+Antes de ir para o `Model` vamos criar um objeto que seja o padrão para qualquer `Schema`:
+
+```js
+const Schema = {
+  field: {
+    type: String
+  , default: undefined
+  , validate: Function
+  , index: Boolean
+  , required: Boolean
+  }
+}
+
+module.exports = Schema;
+```
+
+Além disso para que cada campo seja um átomo independente vamos refatorar nosso `Schema` para criar um esqueleto dos campos para posteriormente ser convertido no `Schema` específico do `Mongoose`.
+
+#### Skeleton
+
+```js
+const Skeleton = [
+  { field: 'name'
+  , props:
+    {
+      type: String,
+      default: ''
+    }
+  }
+, { field: 'description'
+  , props:
+    {
+      type: String,
+      default: ''
+    }
+  }
+, { field: 'alcohol'
+  , props:
+    {
+      type: Number,
+      default: ''
+    }
+  }
+, { field: 'price'
+  , props:
+    {
+      type: Number,
+      default: ''
+    }
+  }
+, { field: 'category'
+  , props:
+    {
+      type: String,
+      default: ''
+    }
+  }
+, { field: 'created_at'
+  , props:
+    {
+      type: Date,
+      default: Date.now
+    }
+  }
+]
+
+module.exports = Skeleton;
+```
+
+O `Skeleton` é um *array* de campos com suas propriedades, criamos dessa forma para poder modularizar ainda mais, aguarde um pouco. Vamos refatorar o `Schema` para aceitar o `Skeleton`, para isso criamos uma *Factory* de `Schemas`:
+
+```js
+// schema.mongoose.factory.js
+var Schema = {};
+const SchemaSkeleton = function(Skeleton) {
+  const createSchemaField = function(SkeletonAtom) {
+    // chamar função que validará cada field se tem a interface correta
+    Schema[SkeletonAtom.field] = SkeletonAtom.props;
+  }
+  Skeleton.forEach(createSchemaField);
+  return Schema;
+};
+
+module.exports = SchemaSkeleton;
+```
+
+Depois de criado o `Skeleton` e o `SchemaFactory` podemos agora criar um `Schema` específico dessa forma:
+
+```js
+// schema.beer.js
+const Skeleton = require('./skeleton.beer');
+const Schema = require('./schema.mongoose.factory')(Skeleton);
+
+module.exports = Schema;
+```
+
+##### Skeleton Atômico
+
+Como eu disse que cada campo será um módulo atômico, aí você deve se perguntar:
+
+**- Mas por quê?**
+
+Porque eu vou querer reusar esses mesmos campos no *Frontend*, essa arquitetura é bem modular para que possa ser reaproveitada em qualquer lugar.
+
+precisamos refatorar o `Skeleton` para:
+
+```js
+const Skeleton = [
+  require('./fields/field.name')
+, require('./fields/field.description')
+, require('./fields/field.alcohol')
+, require('./fields/field.price')
+, require('./fields/field.category')
+, require('./fields/field.created_at')
+]
+
+module.exports = Skeleton;
+```
+
+Para que isso seja possível eu criei uma pasta `fields` que conterá todos os campos atômicos do `Schema` de cervejas, por exemplo o campo `name`.
+
+```js
+// field.name.js
+const Field = {
+  field: 'name'
+  , props:
+    {
+      type: String,
+      default: ''
+    }
+}
+
+module.exports = Field;
+```
+
+### Model
+
+Precisamos entao criar o `Model` para o `Mongoose`:
 
 ```js
 // model.mongoose.js
-const Action = function(Model) {
-  const callbackJSON = function(req, res) {
-    res.json(data);
-  };
+const Mongoose = require('mongoose');
+const skeleton = require('./../schemas/schema.beer');
+const Schema = new mongoose.Schema(skeleton);
+const Model = mongoose.model('Beer', Schema);
+
+module.exports = Model;
+```
+
+
+O `Model` **deve** possuir uma interface padrao para o CRUD:
+
+```js
+Model.create;
+Model.retrieve;
+Model.update;
+Model.delete;
+```
+
+E lembrando da nossa assinatura na `Action`:
+
+```js
+Model.create(data, callbackJSON);
+```
+
+Então refatorando o Model temos:
+
+```js
+// model.mongoose.js
+const Mongoose = require('mongoose');
+const skeleton = require('./../schemas/schema.beer');
+const Schema = new mongoose.Schema(skeleton);
+const ModelMongoose = mongoose.model('Beer', Schema);
+
+Model = {
+  create: function(data, callback) {
+    ModelMongoose.save(data, callback);
+  }
+, retrieve: function(data, callback) {
+    ModelMongoose.find(data.query, callback);
+  }
+, update: function(data, callback) {
+    ModelMongoose.update(data.query, data.mod, callback);
+  }
+, delete: function(data, callback) {
+    ModelMongoose.remove(data.query, callback);
+  }
+}
+
+module.exports = Model;
+```
+
+Nesse caso o `Model` para qualquer CRUD será genérico, bastando apenas a criação anterior do Model específico para seu sistema, podemos modularizar ainda mais, confira comigo:
+
+```js
+const Model = function(ModelDB) {
+
   return {
-    create: function(req, res) {
-      const data = req.body;
-      Model.create(data, callbackJSON);
+    create: function(data, callback) {
+      ModelDB.save(data, callback);
+    }
+  , retrieve: function(data, callback) {
+      ModelDB.find(data.query, callback);
+    }
+  , update: function(data, callback) {
+      ModelDB.update(data.query, data.mod, callback);
+    }
+  , delete: function(data, callback) {
+      ModelDB.remove(data.query, callback);
+    }
+  };
+}
+
+module.exports = Model;
+```
+
+Com isso criamos uma forma de *Factory* para *Models* independente do Banco, ficando assim o *Model* do *Mongoose*:
+
+```js
+// model.mongoose.js
+const Mongoose = require('mongoose');
+const skeleton = require('./../schemas/schema.beer');
+const Schema = new mongoose.Schema(skeleton);
+const ModelMongoose = mongoose.model('Beer', Schema);
+
+Model = require('./model')(ModelMongoose);
+
+module.exports = Model;
+```
+
+Agora para tudo isso funcionar precisamos criar o módulo do Banco.
+
+#### Config - Database
+
+Para que nossa conexão com o Banco de Dados seja modular temos que analisar quais são os valores básicos a serem chamados nas conexões com a maioria dos bancos, rapidamente na mente vêm:
+
+- host
+  + endereço do serviço do Banco
+  + exemplo: 'mongodb://localhost'
+- porta
+  + porta do serviço do Banco
+  + exemplo: 27017
+- database
+  + nome do banco de dados a ser acessado
+
+Então vamos iniciar pensando no módulo da conexão para o MongoDb:
+
+```js
+const DBConfig = {
+  type: 'Document'
+, name: 'MongoDb'
+, host: 'mongodb://localhost/'
+, database: 'arquitetura-foda-test'
+, port: 27017
+}
+
+module.exports = DBConfig;
+```
+
+Para criarmos uma conexão com o MongoDB é bem simples, código antigo retirado do Be MEAN:
+
+```js
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/maceio-setembro-2015');
+
+var db = mongoose.connection;
+db.on('error', function(err){
+    console.log('Erro de conexao.', err);
+});
+db.on('open', function () {
+  console.log('Conexão aberta.');
+});
+db.on('connected', function(err){
+    console.log('Conectado');
+});
+db.on('disconnected', function(err){
+    console.log('Desconectado');
+});
+
+```
+
+Então baseando-me nesse código podemos refatorar para:
+
+```js
+// db.mongodb.js
+const DB_CONFIG = require('./db.mongodb.config');
+const DB_URL = DB_CONFIG.host + DB_CONFIG.database
+
+const mongoose = require('mongoose');
+mongoose.connect(DB_URL);
+
+const db = mongoose.connection;
+db.on('error', function(err){
+    console.log('Erro de conexao.', err);
+});
+db.on('open', function () {
+  console.log('Conexão aberta.');
+});
+db.on('connected', function(err){
+    console.log('Conectado');
+});
+db.on('disconnected', function(err){
+    console.log('Desconectado');
+});
+
+module.exports = db;
+```
+
+Percebeu que o *Mongoose* retorna um objeto da conexão que possui alguns eventos que podemos ouvir, logo teremos que criar um padrão para o objeto de conexão a ser retornado pelos módulos de Banco, irei retirar o evento `open` pois se ele conectar já saberemos que passou por esse estado.
+
+```js
+DBConnection.error;
+DBConnection.connected;
+DBConnection.disconnected;
+```
+
+Pois nos Bancos sem eventos, eles virarão funções a serem chamadas.
+
+```js
+const DB_CONFIG = require('./db.mongodb.config');
+const DB_URL = DB_CONFIG.host + DB_CONFIG.database
+
+const mongoose = require('mongoose');
+mongoose.connect(DB_URL);
+
+const db = mongoose.connection;
+var Connection = {
+  callbacks: {
+    error: function(err){
+      return console.log('Erro de conexao.', err);
+    }
+  , connected: function(err){
+      return console.log('Conectado');
+    }
+  , disconnected: function(err){
+      return console.log('Desconectado');
     }
   }
+, on: function(event, callback) {
+    db.on(event, callback);
+    return db;
+  }
 };
-module.exports = Action;
+console.log(Connection);
+Connection
+  .on('error', Connection.callbacks.error)
+  .on('connected', Connection.callbacks.connected)
+  .on('disconnected', Connection.callbacks.disconnected);
+
+module.exports = db;
+```
+
+Perceba que mesmo o *Mongoose* nos fornecer o método `on` ele não retorna o mesmo objeto para encadearmos, então para deixar o módulo de Conexão, além dos *callbacks* para cada evento também criei o método `on` que irá garantir o encadeamento de eventos para qualquer conexão. E se temos um módulo de conexão precisamos separá-lo:
+
+```js
+// connection.default.js
+const Connection = function(db) {
+  
+  return {
+    callbacks: {
+      error: function(err){
+        return console.log('Erro de conexao.', err);
+      }
+    , connected: function(err){
+        return console.log('Conectado');
+      }
+    , disconnected: function(err){
+        return console.log('Desconectado');
+      }
+    }
+  , on: function(event, callback) {
+      db.on(event, callback);
+      return db;
+    }
+  };
+};
+
+module.exports = Connection;
+```
+
+Pronto agora é só importar nossa conexão e passar o objeto de conexão do Banco desejado.
+
+```js
+// db.mongodb.js
+const DB_CONFIG = require('./db.mongodb.config');
+const DB_URL = DB_CONFIG.host + DB_CONFIG.database
+
+const mongoose = require('mongoose');
+mongoose.connect(DB_URL);
+
+const db = mongoose.connection;
+const Connection = require('./connection.default')(db);
+
+Connection
+  .on('error', Connection.callbacks.error)
+  .on('connected', Connection.callbacks.connected)
+  .on('disconnected', Connection.callbacks.disconnected);
+
+module.exports = db;
 ```
 
 
