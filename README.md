@@ -1058,7 +1058,13 @@ Connection
 module.exports = db;
 ```
 
+Pronto!
 
+Agora para começarmos a usar nosso módulo `Routes` no `Express` precisamos criar o `express.js`:
+
+```js
+
+```
 
 ## FRP - Functional reactive programming
 

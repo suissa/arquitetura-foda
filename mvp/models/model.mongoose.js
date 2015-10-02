@@ -1,9 +1,9 @@
 // model.mongoose.js
-const Mongoose = require('mongoose');
-const skeleton = require('./../schemas/schema.beer');
-const Schema = new mongoose.Schema(skeleton);
-const ModelMongoose = mongoose.model('Beer', Schema);
+const MODEL = function(schemaMongoose){
+  const mongoose = require('mongoose');
+  const ModelMongoose = mongoose.model('Beer', schemaMongoose);
+  return require('./model')(ModelMongoose);
+}
 
-Model = require('./model')(ModelMongoose);
 
-module.exports = Model;
+module.exports = MODEL;
